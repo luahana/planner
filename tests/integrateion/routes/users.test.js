@@ -34,8 +34,8 @@ describe('/api/users', () => {
   describe('GET /', () => {
     it('should return all users', async () => {
       await User.collection.insertMany([
-        { name: 'Planner Test', email: 'Test1@gmail.com' },
-        { name: 'Planner1 Test', email: 'Test2@gmail.com' },
+        { name: 'Planner Test', email: 'Test1@gmail.com', password: '12345' },
+        { name: 'Planner1 Test', email: 'Test2@gmail.com', password: '12345' },
       ])
       const res = await request(app)
         .get('/api/users')
@@ -86,53 +86,50 @@ describe('/api/users', () => {
     let name
     let email
     let password
-    let token
 
     beforeEach(() => {
       name = 'Planner Test'
-      email = 'Planner@gmail.com'
+      email = 'PlannerUser@gmail.com'
       password = '123456'
     })
 
-    const exec = (name, email, password) => {
-      return request(app)
-        .post('/api/users')
-        .send({
-          name,
-          email,
-          password,
-        })
-        .set('x-auth-token', token)
+    const exec = () => {
+      return request(app).post('/api/users').send({
+        name,
+        email,
+        password,
+      })
     }
 
     it('should return 400 if email is already registered', async () => {
       token = ''
+      // const salt = await bcrypt.genSalt(10)
+      // const hashed_password = await bcrypt.hash(password, salt)
       const user = new User({
         name,
         email,
         password,
       })
+      user.password = await user.generateHashedPassword(password)
       await user.save()
-      const res = await exec(name, email, password)
+      const res = await exec()
 
-      console.log(res)
       expect(res.status).toBe(400)
     })
 
     it('should return 200 ', async () => {
-      const res = await exec(name, email, password)
+      const res = await exec()
 
       expect(res.status).toBe(200)
     })
 
     it('should have email in body of response', async () => {
-      const res = await exec(name, email, password)
-      console.log(res)
+      const res = await exec()
       expect(res.body).toHaveProperty('email', email)
     })
 
     it('should have auth token', async () => {
-      const res = await exec(name, email, password)
+      const res = await exec()
 
       expect(res.header).toHaveProperty('x-auth-token')
     })

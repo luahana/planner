@@ -1,5 +1,5 @@
 const { User } = require('../../../models/user')
-const auth = require('../../../middleware/auth')
+const autho = require('../../../middleware/autho')
 const mongoose = require('mongoose')
 
 describe('auth middleware', () => {
@@ -12,7 +12,7 @@ describe('auth middleware', () => {
     const res = {}
     const next = jest.fn()
 
-    auth(req, res, next)
+    autho(req, res, next)
 
     expect(req.user).toMatchObject(user)
   })

@@ -2,6 +2,7 @@ const Joi = require('joi')
 const jwt = require('jsonwebtoken')
 const config = require('config')
 const mongoose = require('mongoose')
+const bcrypt = require('bcrypt')
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -31,6 +32,11 @@ userSchema.methods.generateAuthToken = function () {
     { _id: this._id, isAdmin: this.isAdmin },
     config.get('jwtPrivateKey')
   )
+}
+
+userSchema.methods.generateHashedPassword = async function (password) {
+  const salt = await bcrypt.genSalt(10)
+  return await bcrypt.hash(password, salt)
 }
 
 const User = mongoose.model('User', userSchema)

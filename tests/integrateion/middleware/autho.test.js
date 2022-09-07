@@ -1,5 +1,4 @@
 const { User } = require('../../../models/user')
-// const { Course } = require('../../../models/course')
 const request = require('supertest')
 const app = require('../../../index')
 

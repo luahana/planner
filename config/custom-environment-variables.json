@@ -1,0 +1,5 @@
+{
+  "jwtPrivateKey": "NODE_PLANNER_jwtPrivateKey",
+  "db_prod": "NODE_PLANNER_DB_PROD",
+  "db_dev": "NODE_PLANNER_DB_DEV"
+}

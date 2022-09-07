@@ -4,6 +4,7 @@ const app = require('../../../index')
 
 describe('auth middleware', () => {
   let token
+
   const exec = () => {
     return request(app).get('/api/users').set('x-auth-token', token)
   }
@@ -11,10 +12,6 @@ describe('auth middleware', () => {
   beforeEach(() => {
     token = new User().generateAuthToken()
   })
-
-  // afterEach(async () => {
-  //   await Course.deleteMany({})
-  // })
 
   it('should return 401 if no token is provided', async () => {
     token = ''

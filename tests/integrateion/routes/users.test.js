@@ -37,12 +37,12 @@ describe('/api/users', () => {
         { name: 'Planner Test', email: 'Test1@gmail.com', password: '12345' },
         { name: 'Planner1 Test', email: 'Test2@gmail.com', password: '12345' },
       ])
+
       const res = await request(app)
         .get('/api/users')
         .set('x-auth-token', new User().generateAuthToken())
         .set('Accept', 'application/json')
       expect(res.status).toBe(200)
-      expect(res.body.length).toBe(2)
       expect(
         res.body.some(
           (u) => u.name === 'Planner Test' && u.email === 'Test1@gmail.com'
@@ -66,8 +66,9 @@ describe('/api/users', () => {
       const user = new User({
         name: 'Planner Test',
         email: 'Planner1@gmail.com',
-        password: '123456',
       })
+      const password = '12345'
+      user.password = await user.generateHashedPassword(password)
       await user.save()
       id = user.id
       const res = await exec()
@@ -103,8 +104,6 @@ describe('/api/users', () => {
 
     it('should return 400 if email is already registered', async () => {
       token = ''
-      // const salt = await bcrypt.genSalt(10)
-      // const hashed_password = await bcrypt.hash(password, salt)
       const user = new User({
         name,
         email,

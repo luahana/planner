@@ -103,7 +103,6 @@ describe('/api/users', () => {
     }
 
     it('should return 400 if email is already registered', async () => {
-      token = ''
       const user = new User({
         name,
         email,
@@ -111,6 +110,7 @@ describe('/api/users', () => {
       })
       user.password = await user.generateHashedPassword(password)
       await user.save()
+
       const res = await exec()
 
       expect(res.status).toBe(400)

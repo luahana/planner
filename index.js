@@ -22,7 +22,7 @@ if (process.env.NODE_ENV === environment.prod) {
   require('./startup/prod')(app)
 }
 
-const port = process.env.PORT || 3000
+const port = process.env.PORT || 8080
 if (process.env.NODE_ENV !== environment.test) {
   app.listen(port, () => startupDebugger(`Listening on port ${port}...`))
 }

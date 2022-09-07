@@ -1,0 +1,5 @@
+node_modules/
+coverage
+log_dev.log
+log_prod.log
+log_test.log

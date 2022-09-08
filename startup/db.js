@@ -1,6 +1,6 @@
 const dbDebugger = require('debug')('app:db')
 const mongoose = require('mongoose')
-require('../config/dotenv')()
+require('../lib/dotenv')()
 
 module.exports = async function () {
   const connections = await mongoose.connect(process.env.DB)

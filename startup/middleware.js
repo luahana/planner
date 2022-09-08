@@ -1,5 +1,5 @@
 const express = require('express')
-const environment = require('../config/env.js')
+const environment = require('../lib/env.js')
 const startupDebugger = require('debug')('app:startup')
 const corsOptions = require('../middleware/cors')
 const cors = require('cors')

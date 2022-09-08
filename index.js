@@ -1,5 +1,5 @@
 const startupDebugger = require('debug')('app:startup')
-const environment = require('./config/env.js')
+const environment = require('./lib/env.js')
 const express = require('express')
 const app = express()
 

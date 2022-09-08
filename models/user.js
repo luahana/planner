@@ -1,6 +1,6 @@
 const Joi = require('joi')
 const jwt = require('jsonwebtoken')
-require('../config/dotenv')()
+require('../lib/dotenv')()
 const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')
 
@@ -24,7 +24,13 @@ const userSchema = new mongoose.Schema({
     minlength: 5,
     maxlength: 1024,
   },
-  isAdmin: Boolean,
+  roles: [
+    {
+      type: String,
+      default: 'User',
+    },
+  ],
+  isAdmin: { type: Boolean, default: false },
 })
 
 userSchema.methods.generateAuthToken = function () {

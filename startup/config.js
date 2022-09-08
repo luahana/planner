@@ -1,5 +1,5 @@
 const startupDebugger = require('debug')('app:startup')
-require('../config/dotenv')()
+require('../lib/dotenv')()
 
 module.exports = function () {
   startupDebugger('application Name: ' + process.env.APPNAME)

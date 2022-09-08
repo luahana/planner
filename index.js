@@ -1,20 +1,16 @@
 const startupDebugger = require('debug')('app:startup')
 const config = require('config')
+const environment = require('./env.js')
 const express = require('express')
 const app = express()
-// test clone
-const environment = {
-  prod: 'production',
-  dev: 'development',
-  test: 'test',
-}
 
 let db = config.get('db')
 if (process.env.NODE_ENV === environment.prod) db = config.get('db_prod')
 if (process.env.NODE_ENV === environment.dev) db = config.get('db_dev')
 
 require('./startup/logging')(db)
-require('./startup/config')(app)
+require('./startup/config')()
+require('./startup/middleware')(app)
 require('./startup/routes')(app)
 require('./startup/db')(db)
 // require('./startup/validation')()

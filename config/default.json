@@ -1,5 +1,6 @@
 {
   "name": "Planner Server - Development",
   "db": "mongodb://localhost:27017/node_planner_test",
-  "logFile": "log_test.log"
+  "logFile": "log_test.log",
+  "allowedOrigins": ["http:localhost:3000"]
 }

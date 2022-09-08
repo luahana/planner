@@ -1,9 +1,9 @@
 const startupDebugger = require('debug')('app:startup')
-const config = require('config')
+require('../config/dotenv')()
 
 module.exports = function () {
-  startupDebugger('application Name: ' + config.get('name'))
+  startupDebugger('application Name: ' + process.env.APPNAME)
 
-  if (!config.get('jwtPrivateKey'))
+  if (!process.env.JWTPRIVATEKEY)
     throw new Error('FATAL ERROR: jwtPrivateKey is not defined.')
 }

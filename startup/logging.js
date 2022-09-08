@@ -1,9 +1,9 @@
 const winston = require('winston')
-const config = require('config')
+require('../config/dotenv')()
 require('winston-mongodb')
 require('express-async-errors')
 
-module.exports = function (db) {
+module.exports = function () {
   winston.add(
     new winston.transports.Console({
       level: 'info',
@@ -16,7 +16,7 @@ module.exports = function (db) {
 
   winston.add(
     new winston.transports.File({
-      filename: config.get('logFile'),
+      filename: process.env.LOGFILE,
       handleRejections: true,
       handleExceptions: true,
       level: 'error',
@@ -25,7 +25,7 @@ module.exports = function (db) {
 
   winston.add(
     new winston.transports.MongoDB({
-      db: db,
+      db: process.env.DB,
       options: {
         useUnifiedTopology: true,
       },

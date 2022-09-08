@@ -1,6 +1,6 @@
 const Joi = require('joi')
 const jwt = require('jsonwebtoken')
-const config = require('config')
+require('../config/dotenv')()
 const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')
 
@@ -30,7 +30,7 @@ const userSchema = new mongoose.Schema({
 userSchema.methods.generateAuthToken = function () {
   return jwt.sign(
     { _id: this._id, isAdmin: this.isAdmin },
-    config.get('jwtPrivateKey')
+    process.env.JWTPRIVATEKEY
   )
 }
 

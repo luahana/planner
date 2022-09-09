@@ -30,15 +30,14 @@ const noteSchema = new mongoose.Schema(
 const Note = mongoose.model('Note', noteSchema)
 
 // use npm i joi-password-complexity for password complexity
-// const validateUser = function (user) {
-//   const schema = Joi.object({
-//     name: Joi.string().min(5).max(50).required(),
-//     email: Joi.string().min(5).max(555).required().email(),
-//     password: Joi.string().min(5).max(255).required(),
-//   })
-//   return schema.validate(user)
-// }
+const validateNote = function (note) {
+  const schema = Joi.object({
+    title: Joi.string().max(50).required(),
+    text: Joi.string().max(1024).required(),
+  })
+  return schema.validate(note)
+}
 
 exports.noteSchema = noteSchema
 exports.Note = Note
-// exports.validateUser = validateUser
+exports.validateNote = validateNote

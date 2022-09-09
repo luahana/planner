@@ -14,6 +14,11 @@ router.get('/me', verifyJWT, async (req, res) => {
 })
 
 router.get('/', verifyJWT, async (req, res) => {
+  const { isAdmin } = req.user
+
+  if (isAdmin !== true) {
+    return res.status(401).send({ [errormsg.message]: 'Unauthorized' })
+  }
   const users = await User.find().select('-password').lean()
   if (!users?.length)
     return res.status(404).send({ [errormsg.message]: 'No users found' })
@@ -44,7 +49,7 @@ router.post('/', validate(validateUser), async (req, res) => {
   const token = user.generateAuthToken(process.env.ACCESS_TOKEN_SECRET)
 
   res
-    .header('x-auth-token', token)
+    .header('Authorization', `bearer ${token}`)
     .send(_.pick(user, ['_id', 'name', 'email', 'roles']))
 })
 

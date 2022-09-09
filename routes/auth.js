@@ -49,7 +49,7 @@ router.get('/refresh', (req, res) => {
   const cookies = req.cookies
 
   if (!cookies?.jwt)
-    return res.status(401).json({ [errormsg.message]: 'Unauthorized' })
+    return res.status(401).send({ [errormsg.message]: 'Unauthorized' })
 
   const refreshToken = cookies.jwt
 

@@ -3,11 +3,13 @@ const { errormsg } = require('../lib/errormsg')
 require('../lib/dotenv')()
 
 module.exports = function (req, res, next) {
-  const token = req.header('x-auth-token')
-  if (!token)
-    return res
-      .status(401)
-      .send({ [errormsg.message]: 'Access denied. No token provided' })
+  const authHeader = req.headers?.authorization || req.headers?.Authorization
+
+  if (!authHeader?.startsWith('bearer ')) {
+    return res.status(401).json({ message: 'Unauthorized' })
+  }
+
+  const token = authHeader.split(' ')[1]
 
   try {
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {

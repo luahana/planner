@@ -13,8 +13,9 @@ describe('verifyJWT middleware', () => {
     const token = new User(user).generateAuthToken(
       process.env.ACCESS_TOKEN_SECRET
     )
+
     const req = {
-      header: jest.fn().mockReturnValue(token),
+      headers: { authorization: `bearer ${token}` },
     }
     const res = {}
     const next = jest.fn()

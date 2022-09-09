@@ -6,11 +6,18 @@ describe('verifyJWT middleware', () => {
   let token
 
   const exec = () => {
-    return request(app).get('/api/users').set('x-auth-token', token)
+    return request(app)
+      .get('/api/users')
+      .set('Authorization', 'bearer ' + token)
   }
 
   beforeEach(async () => {
-    token = new User().generateAuthToken(process.env.ACCESS_TOKEN_SECRET)
+    token = new User({
+      name: 'test1',
+      email: 'test@gmail.com',
+      password: 'qwerqwer',
+      isAdmin: true,
+    }).generateAuthToken(process.env.ACCESS_TOKEN_SECRET)
     await User.collection.insertMany([
       { name: 'Planner Test', email: 'Test1@gmail.com', password: '12345' },
       { name: 'Planner1 Test', email: 'Test2@gmail.com', password: '12345' },

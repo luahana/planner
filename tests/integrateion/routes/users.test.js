@@ -11,7 +11,10 @@ describe('/api/users', () => {
   describe('GET /me', () => {
     let token
     const exec = () => {
-      return request(app).get('/api/users/me').set('x-auth-token', token)
+      // return request(app).get('/api/users/me').set('x-auth-token', token)
+      return request(app)
+        .get('/api/users/me')
+        .set('Authorization', 'bearer ' + token)
     }
 
     beforeEach(() => {
@@ -40,9 +43,18 @@ describe('/api/users', () => {
 
       const res = await request(app)
         .get('/api/users')
+        // .set(
+        //   'x-auth-token',
+        //   new User().generateAuthToken(process.env.ACCESS_TOKEN_SECRET)
+        // )
         .set(
-          'x-auth-token',
-          new User().generateAuthToken(process.env.ACCESS_TOKEN_SECRET)
+          'Authorization',
+          'bearer ' +
+            new User({
+              name: 'test',
+              email: 'test@gmail.com,',
+              isAdmin: true,
+            }).generateAuthToken(process.env.ACCESS_TOKEN_SECRET)
         )
         .set('Accept', 'application/json')
       expect(res.status).toBe(200)
@@ -133,7 +145,7 @@ describe('/api/users', () => {
     it('should have auth token', async () => {
       const res = await exec()
 
-      expect(res.header).toHaveProperty('x-auth-token')
+      expect(res.header).toHaveProperty('authorization' || 'Authorization')
     })
   })
 })

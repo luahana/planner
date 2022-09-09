@@ -26,7 +26,13 @@ router.get('/', verifyJWT, async (req, res) => {
   res.send(users)
 })
 
-router.get('/:id', validateObjectId, async (req, res) => {
+router.get('/:id', validateObjectId, verifyJWT, async (req, res) => {
+  const { isAdmin } = req.user
+
+  if (isAdmin !== true) {
+    return res.status(401).send({ [errormsg.message]: 'Unauthorized' })
+  }
+
   const user = await User.findById(req.params.id).select('-password').lean()
   if (!user)
     return res.status(404).send({ [errormsg.message]: 'User not found' })

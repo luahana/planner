@@ -11,7 +11,6 @@ describe('/api/users', () => {
   describe('GET /me', () => {
     let token
     const exec = () => {
-      // return request(app).get('/api/users/me').set('x-auth-token', token)
       return request(app)
         .get('/api/users/me')
         .set('Authorization', 'bearer ' + token)
@@ -35,7 +34,7 @@ describe('/api/users', () => {
   })
 
   describe('GET /', () => {
-    it('should return all users', async () => {
+    it('should return all users if the request user is admin', async () => {
       await User.collection.insertMany([
         { name: 'Planner Test', email: 'Test1@gmail.com', password: '12345' },
         { name: 'Planner1 Test', email: 'Test2@gmail.com', password: '12345' },
@@ -43,10 +42,6 @@ describe('/api/users', () => {
 
       const res = await request(app)
         .get('/api/users')
-        // .set(
-        //   'x-auth-token',
-        //   new User().generateAuthToken(process.env.ACCESS_TOKEN_SECRET)
-        // )
         .set(
           'Authorization',
           'bearer ' +
@@ -74,10 +69,26 @@ describe('/api/users', () => {
   describe('GET /:id', () => {
     let id
     const exec = () => {
-      return request(app).get('/api/users/' + id)
+      return request(app)
+        .get('/api/users/' + id)
+        .set(
+          'Authorization',
+          'bearer ' +
+            new User({
+              name: 'test',
+              email: 'test@gmail.com,',
+              isAdmin: true,
+            }).generateAuthToken(process.env.ACCESS_TOKEN_SECRET)
+        )
     }
 
-    it('should return a user if valid id is passed', async () => {
+    it('should return 404 if invalid id is passed', async () => {
+      id = new mongoose.Types.ObjectId()
+      const res = await exec()
+      expect(res.status).toBe(404)
+    })
+
+    it('should return a user if valid id is passed and the request user is admin', async () => {
       const user = new User({
         name: 'Planner Test',
         email: 'Planner1@gmail.com',
@@ -89,12 +100,6 @@ describe('/api/users', () => {
       const res = await exec()
       expect(res.status).toBe(200)
       expect(res.body).toHaveProperty('_id', user.id)
-    })
-
-    it('should return 404 if invalid id is passed', async () => {
-      id = new mongoose.Types.ObjectId()
-      const res = await exec()
-      expect(res.status).toBe(404)
     })
   })
 

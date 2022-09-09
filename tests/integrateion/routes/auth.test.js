@@ -9,7 +9,7 @@ describe('/api/auth', () => {
 
     beforeEach(() => {
       email = 'PlannerAuth@gmail.com'
-      password = '123456'
+      password = '12345678'
     })
 
     afterEach(async () => {
@@ -25,7 +25,7 @@ describe('/api/auth', () => {
 
     it('should return 400 if email and/or password does not meet the validate condition', async () => {
       email = '123'
-      password = '123'
+      password = '12345678'
       const res = await exec()
       expect(res.status).toBe(400)
     })

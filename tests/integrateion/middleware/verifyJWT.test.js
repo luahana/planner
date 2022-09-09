@@ -2,7 +2,7 @@ const { User } = require('../../../models/user')
 const request = require('supertest')
 const app = require('../../../index')
 
-describe('auth middleware', () => {
+describe('verifyJWT middleware', () => {
   let token
 
   const exec = () => {
@@ -10,7 +10,7 @@ describe('auth middleware', () => {
   }
 
   beforeEach(async () => {
-    token = new User().generateAuthToken()
+    token = new User().generateAuthToken(process.env.ACCESS_TOKEN_SECRET)
     await User.collection.insertMany([
       { name: 'Planner Test', email: 'Test1@gmail.com', password: '12345' },
       { name: 'Planner1 Test', email: 'Test2@gmail.com', password: '12345' },
@@ -29,12 +29,12 @@ describe('auth middleware', () => {
     expect(res.status).toBe(401)
   })
 
-  it('should return 400 if token is invalid', async () => {
+  it('should return 403 if token is invalid', async () => {
     token = 'a'
 
     const res = await exec()
 
-    expect(res.status).toBe(400)
+    expect(res.status).toBe(403)
   })
 
   it('should return 200 if token is valid', async () => {

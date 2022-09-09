@@ -1,5 +1,5 @@
 const _ = require('lodash')
-const autho = require('../middleware/autho')
+const verifyJWT = require('../middleware/verifyJWT')
 const validateObjectId = require('../middleware/validateObjectId')
 const { User, validateUser } = require('../models/User')
 const express = require('express')
@@ -7,19 +7,18 @@ const validate = require('../middleware/validate')
 const router = express.Router()
 const errormsg = require('../lib/errormsg')
 
-router.get('/me', autho, async (req, res) => {
+router.get('/me', verifyJWT, async (req, res) => {
   const user = await User.findById(req.user._id).select('-password').lean()
 
   res.send(user)
 })
 
-router.get('/', autho, async (req, res) => {
+router.get('/', verifyJWT, async (req, res) => {
   const users = await User.find().select('-password').lean()
   if (!users?.length)
     return res.status(404).send({ [errormsg.message]: 'No users found' })
 
   res.send(users)
-  res.j
 })
 
 router.get('/:id', validateObjectId, async (req, res) => {
@@ -42,16 +41,16 @@ router.post('/', validate(validateUser), async (req, res) => {
 
   await user.save()
 
-  const token = user.generateAuthToken()
+  const token = user.generateAuthToken(process.env.ACCESS_TOKEN_SECRET)
 
   res
     .header('x-auth-token', token)
     .send(_.pick(user, ['_id', 'name', 'email', 'roles']))
 })
 
-router.put('/', validate(validateUser), async (req, res) => {
-  const { id, name, password, roles } = req.body
-  const user = await User.findById(id).lean()
+router.put('/:id', validate(validateUser), async (req, res) => {
+  const { name, password, roles } = req.body
+  const user = await User.findById(req.params.id).lean()
   if (!user)
     return res.status(404).send({ [errormsg.message]: 'User not found' })
 
@@ -72,7 +71,7 @@ router.delete('/', async (req, res) => {
   const user = await User.findById(id).lean()
   if (!user)
     return res.status(400).send({ [errormsg.message]: 'user not found' })
-  const result = await user.deleteOne()
+  await user.deleteOne()
 
   res.json({
     [errormsg.message]: `User ${user.email} with id ${user._id} is deleted`,

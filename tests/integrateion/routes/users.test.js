@@ -15,7 +15,7 @@ describe('/api/users', () => {
     }
 
     beforeEach(() => {
-      token = new User().generateAuthToken()
+      token = new User().generateAuthToken(process.env.ACCESS_TOKEN_SECRET)
     })
 
     it('should return 200 if in valid request', async () => {
@@ -40,7 +40,10 @@ describe('/api/users', () => {
 
       const res = await request(app)
         .get('/api/users')
-        .set('x-auth-token', new User().generateAuthToken())
+        .set(
+          'x-auth-token',
+          new User().generateAuthToken(process.env.ACCESS_TOKEN_SECRET)
+        )
         .set('Accept', 'application/json')
       expect(res.status).toBe(200)
       expect(
@@ -67,7 +70,7 @@ describe('/api/users', () => {
         name: 'Planner Test',
         email: 'Planner1@gmail.com',
       })
-      const password = '12345'
+      const password = '12345678'
       user.password = await user.generateHashedPassword(password)
       await user.save()
       id = user.id
@@ -91,7 +94,7 @@ describe('/api/users', () => {
     beforeEach(() => {
       name = 'Planner Test'
       email = 'PlannerUser@gmail.com'
-      password = '123456'
+      password = '12345678'
     })
 
     const exec = () => {

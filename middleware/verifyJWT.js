@@ -10,9 +10,11 @@ module.exports = function (req, res, next) {
       .send({ [errormsg.message]: 'Access denied. No token provided' })
 
   try {
-    const decoded = jwt.verify(token, process.env.JWTPRIVATEKEY)
-    req.user = decoded
-    next()
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+      if (err) return res.status(403).send({ [errormsg.message]: 'Forbidden' })
+      req.user = decoded
+      next()
+    })
   } catch (ex) {
     res.status(400).send({ [errormsg.message]: 'Invalid token.' })
   }

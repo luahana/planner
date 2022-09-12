@@ -4,7 +4,7 @@ const mongoose = require('mongoose')
 
 const noteSchema = new mongoose.Schema(
   {
-    user: {
+    email: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
       ref: 'User',
@@ -15,7 +15,6 @@ const noteSchema = new mongoose.Schema(
     },
     text: {
       type: String,
-      required: true,
     },
     completed: {
       type: Boolean,
@@ -33,7 +32,8 @@ const Note = mongoose.model('Note', noteSchema)
 const validateNote = function (note) {
   const schema = Joi.object({
     title: Joi.string().max(50).required(),
-    text: Joi.string().max(1024).required(),
+    text: Joi.string().max(1024),
+    completed: Joi.boolean(),
   })
   return schema.validate(note)
 }

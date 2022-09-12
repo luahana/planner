@@ -13,7 +13,13 @@ module.exports = function (req, res, next) {
 
   try {
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
-      if (err) return res.status(403).send({ [errormsg.message]: 'Forbidden' })
+      if (err) {
+        console.log(err)
+        return res
+          .status(403)
+          .send({ [errormsg.message]: err.message + 'Forbidden' })
+      }
+
       req.user = decoded
       next()
     })

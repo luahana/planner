@@ -15,7 +15,7 @@ router.get('/me', verifyJWT, async (req, res) => {
 
 router.get('/', verifyJWT, async (req, res) => {
   const { isAdmin } = req.user
-
+  // console.log(req)
   if (isAdmin !== true) {
     return res.status(401).send({ [errormsg.message]: 'Unauthorized' })
   }
@@ -41,13 +41,18 @@ router.get('/:id', validateObjectId, verifyJWT, async (req, res) => {
 })
 
 router.post('/', validate(validateUser), async (req, res) => {
-  let user = await User.findOne({ email: req.body.email }).lean()
+  let user = await User.findOne({ email: req.body.email })
+    .collation({ locale: 'en', strength: 2 })
+    .lean()
+
   if (user)
     return res
       .status(400)
       .send({ [errormsg.message]: 'User already registered.' })
 
-  user = new User(_.pick(req.body, ['name', 'email', 'password', 'roles']))
+  user = new User(
+    _.pick(req.body, ['name', 'email', 'password', 'roles', 'isAdmin'])
+  )
   user.password = await user.generateHashedPassword(user.password)
 
   await user.save()
@@ -56,7 +61,7 @@ router.post('/', validate(validateUser), async (req, res) => {
 
   res
     .header('Authorization', `bearer ${token}`)
-    .send(_.pick(user, ['_id', 'name', 'email', 'roles']))
+    .send(_.pick(user, ['_id', 'name', 'email', 'roles', 'isAdmin']))
 })
 
 router.put('/:id', validate(validateUser), async (req, res) => {

@@ -24,12 +24,10 @@ const userSchema = new mongoose.Schema({
     minlength: 8,
     maxlength: 1024,
   },
-  roles: [
-    {
-      type: String,
-      default: 'user',
-    },
-  ],
+  roles: {
+    type: [String],
+    default: ['user'],
+  },
   isAdmin: { type: Boolean, default: false },
 })
 
@@ -60,6 +58,7 @@ const validateUser = function (user) {
     email: Joi.string().min(5).max(555).required().email(),
     password: Joi.string().min(8).max(255).required(),
     roles: Joi.array().items(Joi.string()),
+    isAdmin: Joi.boolean(),
   })
   return schema.validate(user)
 }

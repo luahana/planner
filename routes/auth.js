@@ -6,6 +6,7 @@ const express = require('express')
 const router = express.Router()
 const loginLimiter = require('../middleware/loginLimiter')
 const { errormsg } = require('../lib/errormsg')
+const jwt = require('jsonwebtoken')
 
 router.post('/', loginLimiter, async (req, res) => {
   const { error } = validate(req.body)
@@ -28,7 +29,7 @@ router.post('/', loginLimiter, async (req, res) => {
 
   const accessToken = user.generateAuthToken(
     process.env.ACCESS_TOKEN_SECRET,
-    '15m'
+    '20s'
   )
 
   const refreshToken = user.generateAuthToken(
@@ -42,7 +43,7 @@ router.post('/', loginLimiter, async (req, res) => {
     sameSite: 'None',
     maxAge: 7 * 24 * 60 * 60 * 1000,
   })
-  res.send(accessToken)
+  res.send({ accessToken })
 })
 
 router.get('/refresh', (req, res) => {
@@ -69,7 +70,7 @@ router.get('/refresh', (req, res) => {
         '10s'
       )
 
-      res.send(accessToken)
+      res.send({ accessToken })
     }
   )
 })

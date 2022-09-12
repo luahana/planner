@@ -7,7 +7,7 @@ const cookieParser = require('cookie-parser')
 const morgan = require('morgan')
 
 module.exports = function (app) {
-  if (process.env.NODE_ENV !== environment.prod) {
+  if (process.env.NODE_ENV === environment.dev) {
     app.use(morgan('tiny'))
     startupDebugger('Morgan enabled...')
   }

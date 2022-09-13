@@ -1,6 +1,7 @@
 const verifyJWT = require('../middleware/verifyJWT')
 const validateObjectId = require('../middleware/validateObjectId')
 const { Note, validateNote } = require('../models/Note')
+const { User } = require('../models/User')
 const express = require('express')
 const validate = require('../middleware/validate')
 const router = express.Router()
@@ -19,8 +20,8 @@ router.get('/', verifyJWT, async (req, res) => {
 
   const notesWithUser = await Promise.all(
     notes.map(async (note) => {
-      const user = await User.findById(note.email).lean().exec()
-      return { ...note, email: user.email }
+      const user = await User.findById(note.user).lean().exec()
+      return { ...note, user }
     })
   )
 
@@ -36,29 +37,28 @@ router.get('/:id', validateObjectId, async (req, res) => {
 })
 
 router.post('/', validate(validateNote), async (req, res) => {
-  const { user, title, text } = req.body
+  const { user, title, content } = req.body
 
-  // Confirm data
-  if (!user || !title || !text)
+  if (!user || !title || !content)
     return res
       .status(400)
       .send({ [errormsg.message]: 'All fields are required' })
 
-  const note = await Note.create({ user, title, text })
+  const note = await Note.create({ user, title, content })
 
   if (!note)
     return res
       .status(400)
       .send({ [errormsg.message]: 'Invalid note data received' })
 
-  return res.status(201).json({ [errormsg.message]: 'New note created' })
+  return res.status(200).send(note)
 })
 
 router.put('/', validate(validateNote), async (req, res) => {
-  const { id, title, text, completed } = req.body
+  const { id, title, content, completed } = req.body
 
   // Confirm data
-  if (!id || !title || !text || typeof completed !== 'boolean') {
+  if (!id || !title || !content || typeof completed !== 'boolean') {
     return res
       .status(400)
       .send({ [errormsg.message]: 'All fields are required' })
@@ -72,7 +72,7 @@ router.put('/', validate(validateNote), async (req, res) => {
   }
 
   note.title = title
-  note.text = text
+  note.content = content
   note.completed = completed
 
   const updatedNote = await note.save()

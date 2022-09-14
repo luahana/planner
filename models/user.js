@@ -36,6 +36,7 @@ userSchema.methods.generateAuthToken = function (secret, time = '10s') {
     {
       _id: this._id,
       email: this.email,
+      name: this.name,
       isAdmin: this.isAdmin,
       roles: this.roles,
     },

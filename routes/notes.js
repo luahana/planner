@@ -39,7 +39,7 @@ router.get('/:id', validateObjectId, async (req, res) => {
 router.post('/', validate(validateNote), async (req, res) => {
   const { user, title, content } = req.body
 
-  if (!user || !title || !content)
+  if (!user || !title)
     return res
       .status(400)
       .send({ [errormsg.message]: 'All fields are required' })
@@ -55,17 +55,17 @@ router.post('/', validate(validateNote), async (req, res) => {
 })
 
 router.put('/', validate(validateNote), async (req, res) => {
-  const { id, title, content, completed } = req.body
+  const { _id, user, title, content, completed } = req.body
 
   // Confirm data
-  if (!id || !title || !content || typeof completed !== 'boolean') {
+  if (!_id || !user || !title || typeof completed !== 'boolean') {
     return res
       .status(400)
       .send({ [errormsg.message]: 'All fields are required' })
   }
 
   // Confirm note exists to update
-  const note = await Note.findById(id).exec()
+  const note = await Note.findById(_id).exec()
 
   if (!note) {
     return res.status(400).send({ [errormsg.message]: 'Note not found' })

@@ -29,7 +29,7 @@ router.post('/', loginLimiter, async (req, res) => {
 
   const accessToken = user.generateAuthToken(
     process.env.ACCESS_TOKEN_SECRET,
-    '20s'
+    '15m'
   )
 
   const refreshToken = user.generateAuthToken(
@@ -67,7 +67,7 @@ router.get('/refresh', (req, res) => {
 
       const accessToken = user.generateAuthToken(
         process.env.ACCESS_TOKEN_SECRET,
-        '10s'
+        '15m'
       )
 
       res.send({ accessToken })

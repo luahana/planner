@@ -81,7 +81,18 @@ router.put('/', validate(validateNote), async (req, res) => {
 })
 
 router.delete('/', async (req, res) => {
-  res.json()
+  const { id } = req.body
+
+  if (!id) return res.status(400).send({ [errormsg.message]: 'id is required' })
+
+  const note = await Note.findById(id)
+  if (!note)
+    return res.status(400).send({ [errormsg.message]: 'note not found' })
+  await note.deleteOne()
+
+  res.json({
+    [errormsg.message]: `Note, ${note._id} is deleted`,
+  })
 })
 
 module.exports = router

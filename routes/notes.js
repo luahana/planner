@@ -37,14 +37,14 @@ router.get('/:id', validateObjectId, async (req, res) => {
 })
 
 router.post('/', validate(validateNote), async (req, res) => {
-  const { user, title, content, assignedDate } = req.body
+  const { user, title, assignedDate } = req.body
 
   if (!user || !title || !assignedDate)
     return res
       .status(400)
       .send({ [errormsg.message]: 'All fields are required' })
 
-  const note = await Note.create({ user, title, content, assignedDate })
+  const note = await Note.create({ ...req.body })
 
   if (!note)
     return res
@@ -55,7 +55,7 @@ router.post('/', validate(validateNote), async (req, res) => {
 })
 
 router.put('/', validate(validateNote), async (req, res) => {
-  const { _id, user, title, content, completed } = req.body
+  const { _id, user, title, content, completed, sets } = req.body
 
   // Confirm data
   if (!_id || !user || !title || typeof completed !== 'boolean') {
@@ -74,6 +74,7 @@ router.put('/', validate(validateNote), async (req, res) => {
   note.title = title
   note.content = content
   note.completed = completed
+  note.sets = sets
 
   const updatedNote = await note.save()
 

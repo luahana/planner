@@ -37,14 +37,14 @@ router.get('/:id', validateObjectId, async (req, res) => {
 })
 
 router.post('/', validate(validateNote), async (req, res) => {
-  const { user, title, content } = req.body
+  const { user, title, content, assignedDate } = req.body
 
-  if (!user || !title)
+  if (!user || !title || !assignedDate)
     return res
       .status(400)
       .send({ [errormsg.message]: 'All fields are required' })
 
-  const note = await Note.create({ user, title, content })
+  const note = await Note.create({ user, title, content, assignedDate })
 
   if (!note)
     return res

@@ -21,6 +21,9 @@ const noteSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    assignedDate: {
+      type: Date,
+    },
   },
   {
     timestamps: true,
@@ -35,7 +38,8 @@ const validateNote = function (note) {
     user: Joi.objectId().required(),
     title: Joi.string().max(50).required(),
     content: Joi.string().optional().allow('').max(1024),
-    completed: Joi.boolean(),
+    completed: Joi.boolean().required(),
+    assignedDate: Joi.date().required(),
   })
   return schema.validate(note)
 }

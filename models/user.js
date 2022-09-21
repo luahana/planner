@@ -60,7 +60,7 @@ const validateUser = function (user) {
     password: Joi.string().min(8).max(255).required(),
     roles: Joi.array().items(Joi.string()),
     isAdmin: Joi.boolean(),
-  }).unknown()
+  })
   return schema.validate(user)
 }
 

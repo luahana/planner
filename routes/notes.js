@@ -21,6 +21,7 @@ router.get('/', verifyJWT, async (req, res) => {
   const notesWithUser = await Promise.all(
     notes.map(async (note) => {
       const user = await User.findById(note.user).lean().exec()
+      if (!note.sets) note.sets = []
       return { ...note, user: user._id }
     })
   )
@@ -28,12 +29,27 @@ router.get('/', verifyJWT, async (req, res) => {
   res.send(notesWithUser)
 })
 
-router.get('/note/:id', verifyJWT, async (req, res) => {
-  res.send()
-})
+router.get('/:queryStr', verifyJWT, async (req, res) => {
+  const userIdStr = req.params.queryStr.slice(0, -8)
+  const dateStr = req.params.queryStr.slice(-8)
+  const date = new Date(
+    parseInt(dateStr.slice(0, 4)),
+    parseInt(dateStr.slice(4, 6)) - 1,
+    parseInt(dateStr.slice(6, 8))
+  )
 
-router.get('/:id', validateObjectId, async (req, res) => {
-  res.send()
+  const notes = await Note.find({
+    assignedDate: {
+      $gte: new Date(new Date(date).setHours(00, 00, 00)),
+      $lt: new Date(new Date(date).setHours(23, 59, 59)),
+    },
+    user: userIdStr,
+  }).lean()
+  console.log(notes)
+  if (!notes)
+    return res.status(404).send({ [errormsg.message]: 'Note not found' })
+
+  res.send(notes)
 })
 
 router.post('/', validate(validateNote), async (req, res) => {

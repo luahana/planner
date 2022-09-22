@@ -43,7 +43,7 @@ const validateNote = function (note) {
     content: Joi.string().optional().allow('').max(1024),
     completed: Joi.boolean().required(),
     assignedDate: Joi.date().required(),
-    sets: Joi.array().items(Joi.boolean()).optional(),
+    sets: Joi.array().items(Joi.boolean()),
   })
   return schema.validate(note)
 }

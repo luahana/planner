@@ -12,7 +12,6 @@ const noteSchema = new mongoose.Schema(
     },
     title: {
       type: String,
-      required: true,
     },
     content: {
       type: String,
@@ -39,11 +38,23 @@ const validateNote = function (note) {
   const schema = Joi.object({
     _id: Joi.objectId(),
     user: Joi.objectId().required(),
-    title: Joi.string().max(50).required(),
+    title: Joi.string().optional().allow('').max(50),
     content: Joi.string().optional().allow('').max(1024),
     completed: Joi.boolean().required(),
-    assignedDate: Joi.date().required(),
     sets: Joi.array().items(Joi.boolean()),
+    assignedDate: Joi.date().allow(''),
+  })
+  return schema.validate(note)
+}
+
+const validateNewNote = function (note) {
+  const schema = Joi.object({
+    user: Joi.objectId().required(),
+    title: Joi.string().optional().allow('').max(50),
+    content: Joi.string().optional().allow('').max(1024),
+    completed: Joi.boolean().required(),
+    sets: Joi.array().items(Joi.boolean()),
+    assignedDate: Joi.date().required(),
   })
   return schema.validate(note)
 }
@@ -51,3 +62,4 @@ const validateNote = function (note) {
 exports.noteSchema = noteSchema
 exports.Note = Note
 exports.validateNote = validateNote
+exports.validateNewNote = validateNewNote

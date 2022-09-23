@@ -1,6 +1,6 @@
 const verifyJWT = require('../middleware/verifyJWT')
 const validateObjectId = require('../middleware/validateObjectId')
-const { Note, validateNote } = require('../models/Note')
+const { Note, validateNote, validateNewNote } = require('../models/Note')
 const { User } = require('../models/User')
 const express = require('express')
 const validate = require('../middleware/validate')
@@ -30,38 +30,50 @@ router.get('/', verifyJWT, async (req, res) => {
 })
 
 router.get('/:queryStr', verifyJWT, async (req, res) => {
-  const userIdStr = req.params.queryStr.slice(0, -8)
-  const dateStr = req.params.queryStr.slice(-8)
-  const date = new Date(
-    parseInt(dateStr.slice(0, 4)),
-    parseInt(dateStr.slice(4, 6)) - 1,
-    parseInt(dateStr.slice(6, 8))
-  )
+  const [userIdStr, dateStr] = req.params.queryStr.split('-')
 
-  const notes = await Note.find({
-    assignedDate: {
-      $gte: new Date(new Date(date).setHours(00, 00, 00)),
-      $lt: new Date(new Date(date).setHours(23, 59, 59)),
-    },
-    user: userIdStr,
-  }).lean()
-  console.log(notes)
-  if (!notes)
-    return res.status(404).send({ [errormsg.message]: 'Note not found' })
+  if (dateStr) {
+    const date = new Date(
+      parseInt(dateStr.slice(0, 4)),
+      parseInt(dateStr.slice(4, 6)),
+      parseInt(dateStr.slice(6, 8))
+    )
 
-  res.send(notes)
+    const notes = await Note.find({
+      assignedDate: {
+        $gte: new Date(new Date(date).setHours(00, 00, 00)),
+        $lt: new Date(new Date(date).setHours(23, 59, 59)),
+      },
+      user: userIdStr,
+    }).lean()
+
+    if (!notes)
+      return res.status(404).send({ [errormsg.message]: 'Note not found' })
+
+    res.send(notes)
+  } else {
+    const notes = await Note.find({
+      assignedDate: null,
+      user: userIdStr,
+    }).lean()
+    if (!notes)
+      return res.status(404).send({ [errormsg.message]: 'Note not found' })
+
+    res.send(notes)
+  }
 })
 
-router.post('/', validate(validateNote), async (req, res) => {
-  const { user, title, assignedDate } = req.body
+router.post('/', validate(validateNewNote), async (req, res) => {
+  console.log(req.body)
+  const { user, assignedDate } = req.body
 
-  if (!user || !title || !assignedDate)
+  if (!user || !assignedDate)
     return res
       .status(400)
       .send({ [errormsg.message]: 'All fields are required' })
 
   const note = await Note.create({ ...req.body })
-
+  console.log(note)
   if (!note)
     return res
       .status(400)
@@ -71,10 +83,10 @@ router.post('/', validate(validateNote), async (req, res) => {
 })
 
 router.put('/', validate(validateNote), async (req, res) => {
-  const { _id, user, title, content, completed, sets } = req.body
-
+  const { _id, user, title, content, completed, sets, assignedDate } = req.body
+  console.log(req.body)
   // Confirm data
-  if (!_id || !user || !title || typeof completed !== 'boolean') {
+  if (!_id || !user || typeof completed !== 'boolean') {
     return res
       .status(400)
       .send({ [errormsg.message]: 'All fields are required' })
@@ -91,6 +103,7 @@ router.put('/', validate(validateNote), async (req, res) => {
   note.content = content
   note.completed = completed
   note.sets = sets
+  note.assignedDate = assignedDate
 
   const updatedNote = await note.save()
 

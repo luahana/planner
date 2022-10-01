@@ -31,20 +31,27 @@ router.get('/', verifyJWT, async (req, res) => {
 
 router.get('/:userId/:year/:month', verifyJWT, async (req, res) => {
   const userId = req.params.userId
-  const fromDate = new Date(req.params.year, req.params.month - 1, -7)
-  const toDate = new Date(req.params.year, req.params.month, 7)
+  const fromDate = new Date(
+    parseInt(req.params.year),
+    parseInt(req.params.month - 1),
+    1
+  )
+  const toDate = new Date(
+    parseInt(req.params.year),
+    parseInt(req.params.month),
+    0
+  )
 
   const notes = await Note.find({
     assignedDate: {
       $gte: fromDate,
-      $lt: toDate,
+      $lte: toDate,
     },
     user: userId,
   }).lean()
 
   if (!notes?.length) {
-    res.send([])
-    return
+    return res.send([])
   }
 
   const notesWithUser = await Promise.all(
@@ -55,7 +62,7 @@ router.get('/:userId/:year/:month', verifyJWT, async (req, res) => {
     })
   )
 
-  res.send(notesWithUser)
+  return res.send(notesWithUser)
 })
 
 router.get('/:queryStr', verifyJWT, async (req, res) => {

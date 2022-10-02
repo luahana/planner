@@ -29,6 +29,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "engines": {
+    "node": "16.x"
+  },
   "scripts": {
     "test": "jest --watchAll --verbose --coverage --runInBand",
     "start": "node index.js",

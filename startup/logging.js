@@ -14,14 +14,14 @@ module.exports = function () {
     })
   )
 
-  winston.add(
-    new winston.transports.File({
-      filename: process.env.LOGFILE,
-      handleRejections: true,
-      handleExceptions: true,
-      level: 'error',
-    })
-  )
+  // winston.add(
+  //   new winston.transports.File({
+  //     filename: process.env.LOGFILE,
+  //     handleRejections: true,
+  //     handleExceptions: true,
+  //     level: 'error',
+  //   })
+  // )
 
   winston.add(
     new winston.transports.MongoDB({

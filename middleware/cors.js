@@ -1,12 +1,10 @@
 const environment = require('../lib/env.js')
-let whitelist
+let whitelist = ['https://planner-frontend-nsk7.vercel.app']
 if (
   process.env.NODE_ENV === environment.dev ||
   process.env.NODE_ENV === environment.test
 ) {
   whitelist = ['http://localhost:3000']
-} else {
-  whitelist = ['https://planner-frontend-nsk7.vercel.app']
 }
 
 module.exports = {

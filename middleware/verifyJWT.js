@@ -19,7 +19,6 @@ module.exports = function (req, res, next) {
           .status(403)
           .send({ [errormsg.message]: err.message + 'Forbidden' })
       }
-
       req.user = decoded
       next()
     })

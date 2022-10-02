@@ -4,32 +4,37 @@ require('../lib/dotenv')()
 const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')
 
-const userSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-    minlength: 5,
-    maxlength: 50,
+const userSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+      minlength: 5,
+      maxlength: 50,
+    },
+    email: {
+      type: String,
+      required: true,
+      minlength: 5,
+      maxlength: 255,
+      unique: true,
+    },
+    password: {
+      type: String,
+      // required: true,
+      minlength: 8,
+      maxlength: 1024,
+    },
+    roles: {
+      type: [String],
+      default: ['user'],
+    },
+    isAdmin: { type: Boolean, default: false },
   },
-  email: {
-    type: String,
-    required: true,
-    minlength: 5,
-    maxlength: 255,
-    unique: true,
-  },
-  password: {
-    type: String,
-    required: true,
-    minlength: 8,
-    maxlength: 1024,
-  },
-  roles: {
-    type: [String],
-    default: ['user'],
-  },
-  isAdmin: { type: Boolean, default: false },
-})
+  {
+    timestamps: true,
+  }
+)
 
 userSchema.methods.generateAuthToken = function (secret, time = '10s') {
   return jwt.sign(

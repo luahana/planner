@@ -7,6 +7,54 @@ const router = express.Router()
 const loginLimiter = require('../middleware/loginLimiter')
 const { errormsg } = require('../lib/errormsg')
 const jwt = require('jsonwebtoken')
+const { OAuth2Client } = require('google-auth-library')
+
+const CLIENT_ID = process.env.GOOGLE_CLIENT_ID
+const client = new OAuth2Client(CLIENT_ID)
+
+async function verify(token) {
+  const ticket = await client.verifyIdToken({
+    idToken: token,
+    audience: CLIENT_ID, // Specify the CLIENT_ID of the app that accesses the backend
+    // Or, if multiple clients access the backend:
+    //[CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3]
+  })
+
+  const payload = ticket.getPayload()
+  return payload
+}
+
+router.post('/googlelogin', async (req, res) => {
+  const token = req.body.googleToken
+  const payload = await verify(token)
+  const email = payload.email
+  const name = payload.name
+
+  let user = await User.findOne({ email })
+
+  if (!user) {
+    user = new User({ email, name })
+    await user.save()
+  }
+
+  const accessToken = user.generateAuthToken(
+    process.env.ACCESS_TOKEN_SECRET,
+    '15m'
+  )
+
+  const refreshToken = user.generateAuthToken(
+    process.env.REFRESH_TOKEN_SECRET,
+    '7d'
+  )
+
+  res.cookie('jwt', refreshToken, {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'None',
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  })
+  res.send({ accessToken })
+})
 
 router.post('/', loginLimiter, async (req, res) => {
   const { error } = validate(req.body)

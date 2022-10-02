@@ -31,7 +31,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest --watchAll --verbose --coverage --runInBand",
-    "start": "node index",
+    "start": "node index.js",
     "dev": "NODE_ENV=\"development\" nodemon"
   },
   "repository": {

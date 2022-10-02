@@ -1,4 +1,5 @@
-const whitelist = ['http://localhost:3000']
+// const whitelist = ['http://localhost:3000']
+const whitelist = ['https://planner-frontend-nsk7.vercel.app/']
 
 module.exports = {
   origin: (origin, callback) => {

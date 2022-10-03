@@ -100,7 +100,6 @@ router.get('/:queryStr', verifyJWT, async (req, res) => {
 })
 
 router.post('/', validate(validateNewNote), async (req, res) => {
-  console.log(req.body)
   const { user, assignedDate } = req.body
 
   if (!user || !assignedDate)
@@ -109,7 +108,6 @@ router.post('/', validate(validateNewNote), async (req, res) => {
       .send({ [errormsg.message]: 'All fields are required' })
 
   const note = await Note.create({ ...req.body })
-  console.log(note)
   if (!note)
     return res
       .status(400)
@@ -120,7 +118,6 @@ router.post('/', validate(validateNewNote), async (req, res) => {
 
 router.put('/', validate(validateNote), async (req, res) => {
   const { _id, user, title, content, completed, sets, assignedDate } = req.body
-  console.log(req.body)
   // Confirm data
   if (!_id || !user || typeof completed !== 'boolean') {
     return res

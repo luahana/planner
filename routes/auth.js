@@ -25,8 +25,15 @@ async function verify(token) {
 }
 
 router.post('/googlelogin', async (req, res) => {
+  console.log('google login req')
+  // console.log(req)
   const token = req.body.googleToken
   const payload = await verify(token)
+
+  return res.send({ payload })
+
+  console.log('payload')
+  // console.log(payload)
   const email = payload.email
   const name = payload.name
 
@@ -96,7 +103,6 @@ router.post('/', loginLimiter, async (req, res) => {
 
 router.get('/refresh', (req, res) => {
   const cookies = req.cookies
-
   if (!cookies?.jwt)
     return res.status(401).send({ [errormsg.message]: 'Unauthorized' })
 

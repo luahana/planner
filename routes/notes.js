@@ -79,10 +79,10 @@ router.get('/:userId/:year/:month/:date', async (req, res) => {
   }
 
   const notes = await Note.find({
-    assignedDate: {
-      $gte: new Date(dt.setHours(00, 00, 00)),
-      $lte: new Date(dt.setHours(00, 00, 00)),
-    },
+    // assignedDate: {
+    //   $gte: new Date(dt.setHours(00, 00, 00)),
+    //   $lte: new Date(dt.setHours(00, 00, 00)),
+    // },
     user: userId,
   }).lean()
 

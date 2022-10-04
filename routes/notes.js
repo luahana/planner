@@ -66,12 +66,17 @@ router.get('/:userId/:year/:month', verifyJWT, async (req, res) => {
 })
 
 router.get('/:userId/:year/:month/:date', verifyJWT, async (req, res) => {
+  const year = req.params.year
+  const month = req.params.month
+  const date = req.params.date
   const userId = req.params.userId
-  const dt = new Date(
-    parseInt(req.params.year),
-    parseInt(req.params.month - 1),
-    parseInt(req.params.date)
-  )
+  const dt = new Date(parseInt(year), parseInt(month - 1), parseInt(date))
+  const didLength = year.length + month.length + date.length
+  if (didLength !== 8) {
+    return res
+      .status(400)
+      .json({ [errormsg.message]: 'year, month, date are not correct format' })
+  }
 
   const notes = await Note.find({
     assignedDate: {

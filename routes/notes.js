@@ -65,7 +65,7 @@ router.get('/:userId/:year/:month', verifyJWT, async (req, res) => {
   return res.send(notesWithUser)
 })
 
-router.get('/:userId/:year/:month/:date', verifyJWT, async (req, res) => {
+router.get('/:userId/:year/:month/:date', async (req, res) => {
   const year = req.params.year
   const month = req.params.month
   const date = req.params.date

@@ -1,8 +1,8 @@
 const environment = require('../lib/env.js')
 let whitelist = [
-  'https://planner-frontend-nsk7.vercel.app',
   'https://www.simpletodo.org',
   'https://simpletodo.org',
+  'https://planner-frontend-nsk7.vercel.app',
 ]
 if (
   process.env.NODE_ENV === environment.dev ||
@@ -20,5 +20,6 @@ module.exports = {
     }
   },
   credentials: true,
+  allowedHeaders: ['Content-Type', 'Authorization'],
   optionsSuccessStatus: 200,
 }

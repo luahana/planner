@@ -65,7 +65,7 @@ router.get('/:userId/:year/:month', verifyJWT, async (req, res) => {
   return res.send(notesWithUser)
 })
 
-router.get('/:userId/:year/:month/:date', async (req, res) => {
+router.get('/:userId/:year/:month/:date', verifyJWT, async (req, res) => {
   const year = req.params.year
   const month = req.params.month
   const date = req.params.date
@@ -99,40 +99,6 @@ router.get('/:userId/:year/:month/:date', async (req, res) => {
   )
 
   return res.send(notesWithUser)
-})
-
-router.get('/:queryStr', verifyJWT, async (req, res) => {
-  const [userIdStr, dateStr] = req.params.queryStr.split('-')
-
-  if (dateStr) {
-    const date = new Date(
-      parseInt(dateStr.slice(0, 4)),
-      parseInt(dateStr.slice(4, 6)),
-      parseInt(dateStr.slice(6, 8))
-    )
-
-    const notes = await Note.find({
-      assignedDate: {
-        $gte: new Date(new Date(date).setHours(00, 00, 00)),
-        $lt: new Date(new Date(date).setHours(23, 59, 59)),
-      },
-      user: userIdStr,
-    }).lean()
-
-    if (!notes)
-      return res.status(404).send({ [errormsg.message]: 'Note not found' })
-
-    res.send(notes)
-  } else {
-    const notes = await Note.find({
-      assignedDate: null,
-      user: userIdStr,
-    }).lean()
-    if (!notes)
-      return res.status(404).send({ [errormsg.message]: 'Note not found' })
-
-    res.send(notes)
-  }
 })
 
 router.post('/', validate(validateNewNote), async (req, res) => {

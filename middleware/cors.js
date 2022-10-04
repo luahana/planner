@@ -20,5 +20,6 @@ module.exports = {
     }
   },
   credentials: true,
+  allowedHeaders: ['Content-Type', 'Authorization'],
   optionsSuccessStatus: 200,
 }

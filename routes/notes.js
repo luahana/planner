@@ -29,15 +29,16 @@ router.get('/', verifyJWT, async (req, res) => {
   res.send(notesWithUser)
 })
 
-router.post('/updateTime', verifyJWT, async (req, res) => {
+router.post('/updateUnassigned', verifyJWT, async (req, res) => {
   const notes = await Note.find().lean()
 
   let noDate = 0
   for (let i = 0; i < notes.length; i++) {
-    await Note.updateOne(
-      { _id: notes[i]._id },
-      { $set: { assignedTime: new Date(notes[i].assignedDate).getTime() } }
-    )
+    if (notes[i].assignedTime < 0) {
+      await Note.updateOne({ _id: notes[i]._id }, { $set: { assigned: false } })
+    } else {
+      await Note.updateOne({ _id: notes[i]._id }, { $set: { assigned: true } })
+    }
     noDate++
   }
 
@@ -51,13 +52,24 @@ router.get('/:userId/:from/:to', verifyJWT, async (req, res) => {
       $gte: req.params.from,
       $lte: req.params.to,
     },
+    assigned: true,
+  }).lean()
+
+  return res.send(notes)
+})
+
+router.get('/:userId/unassigned', verifyJWT, async (req, res) => {
+  const notes = await Note.find({
+    user: req.params.userId,
+    assigned: false,
   }).lean()
 
   return res.send(notes)
 })
 
 router.put('/', validate(validateNote), async (req, res) => {
-  const { _id, user, title, content, completed, sets, assignedDate } = req.body
+  const { _id, user, title, content, completed, sets, assignedTime, assigned } =
+    req.body
 
   // Confirm data
   if (!user || typeof completed !== 'boolean') {
@@ -72,7 +84,8 @@ router.put('/', validate(validateNote), async (req, res) => {
     note.content = content
     note.completed = completed
     note.sets = sets
-    note.assignedDate = assignedDate
+    note.assigned = assigned
+    note.assignedTime = assignedTime
 
     const updatedNote = await note.save()
 
@@ -90,7 +103,8 @@ router.put('/', validate(validateNote), async (req, res) => {
   note.content = content
   note.completed = completed
   note.sets = sets
-  note.assignedDate = assignedDate
+  note.assigned = assigned
+  note.assignedTime = assignedTime
 
   const updatedNote = await note.save()
 

@@ -23,6 +23,9 @@ const noteSchema = new mongoose.Schema(
     assignedDate: {
       type: Date,
     },
+    assignedTime: {
+      type: Number,
+    },
     sets: {
       type: [Boolean],
     },
@@ -43,6 +46,7 @@ const validateNote = function (note) {
     completed: Joi.boolean().required(),
     sets: Joi.array().items(Joi.boolean()),
     assignedDate: Joi.date().allow(''),
+    assignedTime: Joi.number(),
   })
   return schema.validate(note)
 }

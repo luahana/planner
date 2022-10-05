@@ -29,93 +29,31 @@ router.get('/', verifyJWT, async (req, res) => {
   res.send(notesWithUser)
 })
 
-router.get('/:userId/:year/:month', verifyJWT, async (req, res) => {
-  const userId = req.params.userId
-  const fromDate = new Date(
-    parseInt(req.params.year),
-    parseInt(req.params.month - 1),
-    1
-  )
-  const toDate = new Date(
-    parseInt(req.params.year),
-    parseInt(req.params.month),
-    0
-  )
+router.post('/updateTime', verifyJWT, async (req, res) => {
+  const notes = await Note.find().lean()
 
-  const notes = await Note.find({
-    assignedDate: {
-      $gte: fromDate,
-      $lte: toDate,
-    },
-    user: userId,
-  }).lean()
-
-  if (!notes?.length) {
-    return res.send([])
+  let noDate = 0
+  for (let i = 0; i < notes.length; i++) {
+    await Note.updateOne(
+      { _id: notes[i]._id },
+      { $set: { assignedTime: new Date(notes[i].assignedDate).getTime() } }
+    )
+    noDate++
   }
 
-  const notesWithUser = await Promise.all(
-    notes.map(async (note) => {
-      const user = await User.findById(note.user).lean().exec()
-      if (!note.sets) note.sets = []
-      return { ...note, user: user._id }
-    })
-  )
-
-  return res.send(notesWithUser)
+  return res.send({ noDate })
 })
 
-router.get('/:userId/:year/:month/:date', verifyJWT, async (req, res) => {
-  const year = req.params.year
-  const month = req.params.month
-  const date = req.params.date
-  const userId = req.params.userId
-  const dt = new Date(parseInt(year), parseInt(month - 1), parseInt(date))
-  const didLength = year.length + month.length + date.length
-  if (didLength !== 8) {
-    return res
-      .status(400)
-      .json({ [errormsg.message]: 'year, month, date are not correct format' })
-  }
-
+router.get('/:userId/:from/:to', verifyJWT, async (req, res) => {
   const notes = await Note.find({
-    assignedDate: {
-      $gte: new Date(dt.setHours(00, 00, 00)),
-      $lte: new Date(dt.setHours(23, 59, 59)),
+    user: req.params.userId,
+    assignedTime: {
+      $gte: req.params.from,
+      $lte: req.params.to,
     },
-    user: userId,
   }).lean()
 
-  if (!notes?.length) {
-    return res.send([])
-  }
-
-  const notesWithUser = await Promise.all(
-    notes.map(async (note) => {
-      const user = await User.findById(note.user).lean().exec()
-      if (!note.sets) note.sets = []
-      return { ...note, user: user._id }
-    })
-  )
-
-  return res.send(notesWithUser)
-})
-
-router.post('/', validate(validateNewNote), async (req, res) => {
-  const { user, assignedDate } = req.body
-
-  if (!user || !assignedDate)
-    return res
-      .status(400)
-      .send({ [errormsg.message]: 'All fields are required' })
-
-  const note = await Note.create({ ...req.body })
-  if (!note)
-    return res
-      .status(400)
-      .send({ [errormsg.message]: 'Invalid note data received' })
-
-  return res.status(200).send(note)
+  return res.send(notes)
 })
 
 router.put('/', validate(validateNote), async (req, res) => {
@@ -172,6 +110,59 @@ router.delete('/', async (req, res) => {
   res.json({
     [errormsg.message]: `Note, ${note._id} is deleted`,
   })
+})
+
+router.get('/:userId/:year/:month', verifyJWT, async (req, res) => {
+  const userId = req.params.userId
+  const fromDate = new Date(
+    parseInt(req.params.year),
+    parseInt(req.params.month - 1),
+    1
+  )
+  const toDate = new Date(
+    parseInt(req.params.year),
+    parseInt(req.params.month),
+    0
+  )
+
+  const notes = await Note.find({
+    assignedDate: {
+      $gte: fromDate,
+      $lte: toDate,
+    },
+    user: userId,
+  }).lean()
+
+  if (!notes?.length) {
+    return res.send([])
+  }
+
+  const notesWithUser = await Promise.all(
+    notes.map(async (note) => {
+      const user = await User.findById(note.user).lean().exec()
+      if (!note.sets) note.sets = []
+      return { ...note, user: user._id }
+    })
+  )
+
+  return res.send(notesWithUser)
+})
+
+router.post('/', validate(validateNewNote), async (req, res) => {
+  const { user, assignedDate } = req.body
+
+  if (!user || !assignedDate)
+    return res
+      .status(400)
+      .send({ [errormsg.message]: 'All fields are required' })
+
+  const note = await Note.create({ ...req.body })
+  if (!note)
+    return res
+      .status(400)
+      .send({ [errormsg.message]: 'Invalid note data received' })
+
+  return res.status(200).send(note)
 })
 
 module.exports = router

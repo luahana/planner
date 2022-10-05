@@ -29,7 +29,7 @@ router.get('/', verifyJWT, async (req, res) => {
   res.send(notesWithUser)
 })
 
-router.post('/updateUnassigned', verifyJWT, async (req, res) => {
+router.post('/updateUnassigned', async (req, res) => {
   const notes = await Note.find().lean()
 
   let noDate = 0

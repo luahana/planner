@@ -26,7 +26,7 @@ async function verify(token) {
 
 router.post('/googlelogin', async (req, res) => {
   const token = req.body.googleToken
-  res.send({ accessToken: token })
+  res.send({ token })
   return
   const payload = await verify(token)
 

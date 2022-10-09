@@ -4,7 +4,7 @@ if (
   process.env.NODE_ENV === environment.dev ||
   process.env.NODE_ENV === environment.test
 ) {
-  whitelist = ['http://localhost:3000']
+  whitelist = ['http://localhost:3000', 'https://simpletodo.org']
 }
 
 module.exports = {

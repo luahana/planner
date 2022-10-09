@@ -8,14 +8,15 @@ let whitelist = ['https://www.simpletodo.org', 'https://simpletodo.org']
 // }
 
 module.exports = {
-  origin: (origin, callback) => {
-    if (whitelist.indexOf(origin) !== -1 || !origin) {
-      callback(null, true)
-    } else {
-      callback(new Error('Not alllowed by CORS'))
-    }
-  },
+  // origin: (origin, callback) => {
+  //   if (whitelist.indexOf(origin) !== -1 || !origin) {
+  //     callback(null, true)
+  //   } else {
+  //     callback(new Error('Not alllowed by CORS'))
+  //   }
+  // },
+  origin: 'https://www.simpletodo.org',
   credentials: true,
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  // allowedHeaders: ['Content-Type', 'Authorization'],
   optionsSuccessStatus: 200,
 }

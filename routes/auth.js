@@ -98,7 +98,7 @@ router.post('/', loginLimiter, async (req, res) => {
 router.get('/refresh', (req, res) => {
   const cookies = req.cookies
   if (!cookies?.jwt)
-    return res.status(401).send({ [errormsg.message]: 'Unauthorized1' })
+    return res.status(401).send({ [errormsg.message]: `${req} Unauthorized1` })
 
   const refreshToken = cookies.jwt
 

@@ -1,5 +1,9 @@
 const environment = require('../lib/env.js')
-let whitelist = ['https://simpletodo.org']
+let whitelist = [
+  'https://www.simpletodo.org',
+  'https://simpletodo.org',
+  'https://planner-frontend-nsk7.vercel.app',
+]
 if (
   process.env.NODE_ENV === environment.dev ||
   process.env.NODE_ENV === environment.test

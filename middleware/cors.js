@@ -17,6 +17,6 @@ module.exports = {
   // },
   origin: 'https://www.simpletodo.org',
   credentials: true,
-  // allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
   optionsSuccessStatus: 200,
 }

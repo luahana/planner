@@ -24,12 +24,13 @@ async function verify(token) {
   return payload
 }
 
-router.get('/googlelogin', async (req, res) => {
+router.post('/googlelogin', async (req, res) => {
   const token = req.body.googleToken
   // res.send({ response: 'success' })
   // return
   const payload = await verify(token)
-
+  // res.send({ response: 'success' })
+  // return
   const email = payload.email
   const name = payload.name
 

@@ -29,22 +29,6 @@ router.get('/', verifyJWT, async (req, res) => {
   res.send(notesWithUser)
 })
 
-router.post('/updateUnassigned', async (req, res) => {
-  const notes = await Note.find().lean()
-
-  let noDate = 0
-  for (let i = 0; i < notes.length; i++) {
-    if (notes[i].assignedTime < 0) {
-      await Note.updateOne({ _id: notes[i]._id }, { $set: { assigned: false } })
-    } else {
-      await Note.updateOne({ _id: notes[i]._id }, { $set: { assigned: true } })
-    }
-    noDate++
-  }
-
-  return res.send({ noDate })
-})
-
 router.get('/:userId/:from/:to', verifyJWT, async (req, res) => {
   const notes = await Note.find({
     user: req.params.userId,
@@ -177,6 +161,22 @@ router.post('/', validate(validateNewNote), async (req, res) => {
       .send({ [errormsg.message]: 'Invalid note data received' })
 
   return res.status(200).send(note)
+})
+
+router.post('/updateUnassigned', async (req, res) => {
+  const notes = await Note.find().lean()
+
+  let noDate = 0
+  for (let i = 0; i < notes.length; i++) {
+    if (notes[i].assignedTime < 0) {
+      await Note.updateOne({ _id: notes[i]._id }, { $set: { assigned: false } })
+    } else {
+      await Note.updateOne({ _id: notes[i]._id }, { $set: { assigned: true } })
+    }
+    noDate++
+  }
+
+  return res.send({ noDate })
 })
 
 module.exports = router

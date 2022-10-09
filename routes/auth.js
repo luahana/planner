@@ -98,7 +98,7 @@ router.post('/', loginLimiter, async (req, res) => {
 router.get('/refresh', (req, res) => {
   const cookies = req.cookies
   if (!cookies?.jwt)
-    return res.status(401).send({ [errormsg.message]: 'Unauthorized' })
+    return res.status(401).send({ [errormsg.message]: 'Unauthorized1' })
 
   const refreshToken = cookies.jwt
 
@@ -111,7 +111,7 @@ router.get('/refresh', (req, res) => {
       const user = await User.findById(decoded._id)
 
       if (!user)
-        return res.status(401).send({ [errormsg.message]: 'Unauthorized' })
+        return res.status(401).send({ [errormsg.message]: 'Unauthorized2' })
 
       const accessToken = user.generateAuthToken(
         process.env.ACCESS_TOKEN_SECRET,

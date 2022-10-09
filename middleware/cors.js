@@ -1,5 +1,5 @@
 const environment = require('../lib/env.js')
-let whitelist = ['https://simpletodo.org']
+let whitelist = ['http://localhost:3000', 'https://simpletodo.org']
 if (
   process.env.NODE_ENV === environment.dev ||
   process.env.NODE_ENV === environment.test

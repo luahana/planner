@@ -1,11 +1,11 @@
 const environment = require('../lib/env.js')
 let whitelist = ['https://www.simpletodo.org', 'https://simpletodo.org']
-// if (
-//   process.env.NODE_ENV === environment.dev ||
-//   process.env.NODE_ENV === environment.test
-// ) {
-//   whitelist = ['http://localhost:3000']
-// }
+if (
+  process.env.NODE_ENV === environment.dev ||
+  process.env.NODE_ENV === environment.test
+) {
+  whitelist = ['http://localhost:3000']
+}
 
 module.exports = {
   origin: (origin, callback) => {

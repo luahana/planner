@@ -11,7 +11,7 @@ module.exports = function (app) {
     app.use(morgan('tiny'))
     startupDebugger('Morgan enabled...')
   }
-  app.use(cors(corsOptions))
+  // app.use(cors(corsOptions))
   app.use(cookieParser())
   app.use(express.json())
 }

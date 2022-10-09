@@ -26,7 +26,8 @@ async function verify(token) {
 
 router.post('/googlelogin', async (req, res) => {
   const token = req.body.googleToken
-  throw new Error(`error: ${token}`)
+  res.send({ accessToken: token })
+  return
   const payload = await verify(token)
 
   const email = payload.email

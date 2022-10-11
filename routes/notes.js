@@ -52,7 +52,7 @@ router.get('/:userId/unassigned', verifyJWT, async (req, res) => {
 })
 
 router.put('/', validate(validateNote), async (req, res) => {
-  const { _id, user, title, content, completed, sets, assignedTime, assigned } =
+  const { id, user, title, content, completed, sets, assignedTime, assigned } =
     req.body
 
   // Confirm data
@@ -62,7 +62,7 @@ router.put('/', validate(validateNote), async (req, res) => {
       .send({ [errormsg.message]: 'All fields are required' })
   }
 
-  if (!_id) {
+  if (!id) {
     const note = await Note.create({ ...req.body })
     note.title = title
     note.content = content
@@ -77,7 +77,7 @@ router.put('/', validate(validateNote), async (req, res) => {
   }
 
   // Confirm note exists to update
-  const note = await Note.findById(_id).exec()
+  const note = await Note.findById(id).exec()
 
   if (!note) {
     return res.status(400).send({ [errormsg.message]: 'Note not found' })

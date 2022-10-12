@@ -54,8 +54,6 @@ router.get('/:userId/unassigned', verifyJWT, async (req, res) => {
 router.put('/', validate(validateNote), async (req, res) => {
   const { _id, user, title, content, completed, sets, assignedTime, assigned } =
     req.body
-  console.log('req.body')
-  console.log(req.body)
 
   // Confirm data
   if (!user || typeof completed !== 'boolean') {
